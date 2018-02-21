@@ -1,0 +1,22 @@
+{{ header }}
+<div id="information-information" class="container" >
+  <div class="row">{{ column_left }}
+    {% if column_left and column_right %}
+    {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div id="content">{{ content_top }}
+        <iframe id='checkoutIframe' name='checkoutIframe' frameborder='0'  scrolling='no'> </iframe>
+      {{ content_bottom }}</div>
+    {{ column_right }}</div>
+</div>
+{{ footer }}
+
+<script type="text/javascript"><!--  
+$('#checkoutIframe').height(document.getElementById('information-information').offsetHeight);
+$('#checkoutIframe').width(document.getElementById('information-information').offsetWidth );
+$('#checkoutIframe').attr('src', "{{ snippet }}");
+//--></script>

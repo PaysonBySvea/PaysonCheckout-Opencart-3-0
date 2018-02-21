@@ -1,0 +1,89 @@
+{% if snippet is defined %}
+        {% if status == readyToPay %}
+            // Nothing to do
+            {{ header }}
+            {{ column_left }}
+            {{ column_right }}
+            
+            <div class="container">{{ content_top }}
+            <!-- <iframe id='checkoutIframe' name='checkoutIframe' src= frameborder='0'  scrolling='no'> </iframe>-->
+            </div>  
+            {{ snippet}}
+            {{ footer }}
+        
+        {% else %}
+                {% if customerIsLogged == false %}
+                        
+                        <!-- <div class="well well-sm"> -->
+                        <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ info_checkout }}
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        </div>
+                        
+                {% endif %}
+                    
+                        {{ snippet}}
+                        <div id="paysonTracker" style="display: none"></div>
+                    
+        {% endif %}
+    
+{% else %} 
+    
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_checkout_id }}
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        <div id="paysonTracker" style="display: none">{{ random() }}</div>
+    
+{% endif %}
+
+<script type="text/javascript"><!--  
+
+   // QUICH AJAX CHECKOUT OPEN CART FIX -> START
+    document.paysonQuickCheckoutTracker = function() {
+        try {
+			// Check payment method
+			var isPayson = document.getElementById("paysonTracker");
+			
+			var paymentForm = document.getElementById('payment_method_form');
+			if(paymentForm) {
+				var paysonPaymentMethod = document.getElementById('paysonCheckout2');
+				if(paysonPaymentMethod) {
+					isPayson = paysonPaymentMethod.checked;
+				}
+			}
+			
+            document.getElementById("confirm_view").style.display = (isPayson?"none":"block");
+            document.getElementById("payment_address").parentElement.style.display = (isPayson?"none":"block");
+            document.getElementById("payment_view").parentElement.parentElement.parentElement.className = (isPayson?"col-md-12":"col-md-8");
+            
+        } catch(ex) {
+            // Nothing to do
+        }
+        setTimeout(document.paysonQuickCheckoutTracker, 500);
+    };
+    document.paysonQuickCheckoutTracker();
+    // QUICH AJAX CHECKOUT OPEN CART FIX -> END
+    
+    
+    document.addEventListener("PaysonEmbeddedAddressChanged",function(evt) {
+        var address = evt.detail;
+        
+      	//adress.City
+        //adress.CountryCode
+        //adress.FirstName
+        //adress.LastName
+        //adress.PostalCode
+        //adress.Street
+        //alert(address.City);
+        
+        console.log(address);
+
+            
+        var country_code = '<?php echo isset($country_code)?strtoupper($country_code):0; ?>';
+        var customerIsLogged = '<?php echo isset($customerIsLogged)?$customerIsLogged:0; ?>';
+
+        if(!customerIsLogged && (country_code !== address.CountryCode.toUpperCase())){
+           document.location='index.php?route=payment/paysonCheckout2/returnFromPayson&address_data='+JSON.stringify(address);
+        }
+    });
+ 
+//--></script>
