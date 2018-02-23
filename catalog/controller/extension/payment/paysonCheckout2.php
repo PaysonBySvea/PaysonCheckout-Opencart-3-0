@@ -365,7 +365,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
             $api_key = $key[$multiStore];
             return new PaysonEmbedded\PaysonApi($merchant_id, $api_key, FALSE);
         } else {
-            return new PaysonEmbedded\PaysonApi('1547', 'b711f09e-30a2-4268-bbbd-573eda96dc8f', TRUE);
+            return new PaysonEmbedded\PaysonApi('4', '2acab30d-fe50-426f-90d7-8c60a7eb31d4', TRUE);
         }
     }
 
