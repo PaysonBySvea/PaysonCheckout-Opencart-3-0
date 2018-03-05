@@ -23,7 +23,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         if (isset($this->request->get['snippet']) and $this->request->get['snippet'] !== Null) {
         //$iframeSetup['heading_title'] = $this->language->get('heading_title');
             $this->load->model('checkout/order'); 
-            $this->response->redirect($this->url->link('extension/payment/paysonCheckout21', 'user_token=' . $this->session->data['user_token']. '&status=readyToPay&snippet='.$this->getSnippetUrl($this->request->get['snippet']), true));
+            $this->response->redirect($this->url->link('extension/payment/paysonCheckout21', 'status=readyToPay&snippet='.$this->getSnippetUrl($this->request->get['snippet']), true));
             
         } else {
             $this->setupPurchaseData();
