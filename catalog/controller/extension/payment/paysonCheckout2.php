@@ -189,7 +189,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
                         
             $this->response->redirect($this->url->link('checkout/checkout'));
         } 
-        error_log(print_r($this->getAPIInstanceMultiShop(),true));
+        //error_log(print_r($this->getAPIInstanceMultiShop(),true));
         
         $callPaysonApi = $this->getAPIInstanceMultiShop();
         try {
