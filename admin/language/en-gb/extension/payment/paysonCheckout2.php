@@ -59,7 +59,7 @@ $_['entry_order_item_details_to_ignore'] = 'Order Item Details to ignore by Pays
 $_['entry_show_receipt_page'] = 'Show Receipt Page';
 $_['entry_show_receipt_page_yes'] = 'Yes';
 $_['entry_show_receipt_page_no'] = 'No';
-$_['entry_show_comments'] = 'Comments About the Order';
+$_['entry_show_comments'] = 'Comments about the Order';
 $_['entry_show_comments_yes'] = 'Yes';
 $_['entry_show_comments_no'] = 'No';
 // Error
@@ -83,6 +83,6 @@ $_['help_iframe_size_height_type'] = 'Select the height of iframe';
 $_['help_iframe_size_width_type'] = 'Select the width of iframe';
 $_['help_total'] = 'The checkout total the order must reach before this payment method becomes active';
 $_['help_receipt'] = 'Select Yes for Payson receipt or No for Opencart receipt';
-$_['help_comments'] = 'Select Yes or No to enable/disable comments About the order Order';
+$_['help_comments'] = 'Select Yes or No to enable/disable comments about the order';
 $_['help_totals_to_ignore'] = 'Comma separated list with order totals not to send to payson';
 ?>
