@@ -12,6 +12,12 @@
             {{ footer }}
         
         {% else %}
+                {% if is_comments %}
+                    <p><strong>{{ text_payson_comments }}</strong></p>
+                    <p>
+                      <textarea name="payson_comments" id="payson_comments" rows="6" class="form-control">{{ payson_comment }}</textarea>
+                    </p>
+                {% endif %}
                 {% if customerIsLogged == false %}
                         
                         <!-- <div class="well well-sm"> -->
@@ -36,6 +42,20 @@
 {% endif %}
 
 <script type="text/javascript"><!--  
+
+    $("#payson_comments").on('mouseout', function(e) {
+        $.ajax({
+            type: 'get',
+            url: 'index.php?route=extension/payment/paysonCheckout2/paysonComments' + '&payson_comments=' + e.target.value,
+            cache: false,
+            success: function(response) {
+                //Do Something
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                //Do Something to handle error
+            }
+        });
+     });
 
    // QUICH AJAX CHECKOUT OPEN CART FIX -> START
     document.paysonQuickCheckoutTracker = function() {
@@ -75,7 +95,7 @@
         //adress.Street
         //alert(address.City);
         
-        console.log(address);
+        //console.log(address);
 
             
         var country_code = '<?php echo isset($country_code)?strtoupper($country_code):0; ?>';

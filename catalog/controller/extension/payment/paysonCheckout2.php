@@ -4,7 +4,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     private $testMode;
     public $data = array();
 
-    const MODULE_VERSION = 'paysonEmbedded_1.0.0.0';
+    const MODULE_VERSION = 'paysonEmbedded_1.0.0.1';
 
     function __construct($registry) {
         parent::__construct($registry);
@@ -13,7 +13,10 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
 
     public function index() {
         $this->load->language('extension/payment/paysonCheckout2');
-        
+
+
+        $this->data['text_payson_comments'] = $this->language->get('text_payson_comments');
+        $this->data['is_comments'] = $this->config->get('payment_paysonCheckout2_comments') == 1?1:0;
         $this->data['error_checkout_id'] = $this->language->get('error_checkout_id');
         $this->data['info_checkout'] = $this->language->get('info_checkout');
         $this->data['country_code'] = isset($this->session->data['payment_address']['iso_code_2'])? $this->session->data['payment_address']['iso_code_2'] : NULL;
@@ -49,6 +52,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
 
         $order_data = $this->model_checkout_order->getOrder($this->session->data['order_id']);
         $this->data['store_name'] = html_entity_decode($order_data['store_name'], ENT_QUOTES, 'UTF-8');
+        $this->data['payson_comment'] = html_entity_decode($order_data['comment'], ENT_QUOTES, 'UTF-8');
         //Payson send the responds to the shop.
                 
         $this->data['ok_url'] = $this->url->link('extension/payment/paysonCheckout2/returnFromPayson&order_id=' . $this->session->data['order_id']);
@@ -683,6 +687,19 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
 
     private function writeModuleInfoToLog() {
         return 'Module version: ' . $this->config->get('payment_paysonCheckout2_modul_version') . '&#10;------------------------------------------------------------------------&#10;';
+    }
+
+    public function paysonComments(){
+        $this->load->model('checkout/order');
+        if(isset($this->request->get['payson_comments']) && !empty($this->request->get['payson_comments'])){
+            $p_comments = $this->request->get['payson_comments'];
+            if(is_string($p_comments)){
+                $this->session->data['comment'] = $p_comments;
+                $this->db->query("UPDATE `" . DB_PREFIX . "order` SET 
+                comment  = '" . nl2br($p_comments) . "'
+                WHERE order_id      = '" . $this->session->data['order_id'] . "'");  
+            }
+        }
     }
 
     public function paysonApiError($error) {
