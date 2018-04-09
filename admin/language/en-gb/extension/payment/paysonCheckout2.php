@@ -7,7 +7,7 @@ $_['heading_title'] = 'Payson Checkout 2.0';
 
 // Text
 $_['text_modul_name'] = 'Payson Checkout 2.0';
-$_['text_modul_version'] = '1.0.0.2';
+$_['text_modul_version'] = '1.0.0.3';
 
 $_['text_payment'] = 'Payment';
 $_['text_extension']     = 'Extensions';
@@ -43,6 +43,12 @@ $_['text_verification_bankid'] = 'BankId';
 $_['entry_color_scheme'] = 'Color scheme';
 $_['text_color_scheme_blue'] = 'blue';
 $_['text_color_scheme_gray'] = 'gray';
+$_['text_color_scheme_grayTextLogos'] = 'gray text logos';
+$_['text_color_scheme_blueTextLogos'] = 'blue text logos';
+$_['text_color_scheme_whiteTextLogos'] = 'white text logos';
+$_['text_color_scheme_grayNoFooter'] = 'gray no footer';
+$_['text_color_scheme_blueNoFooter'] = 'blue no footer';
+$_['text_color_scheme_whiteNoFooter'] = 'white no footer';
 $_['text_color_scheme_white'] = 'white';
 $_['text_color_scheme_graysemi'] = 'graysemi';
 $_['text_color_scheme_pitchblack'] = 'pitchblack';
