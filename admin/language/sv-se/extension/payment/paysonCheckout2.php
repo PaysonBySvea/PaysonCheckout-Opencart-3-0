@@ -64,6 +64,9 @@ $_['entry_order_item_details_to_ignore'] = 'Ignorerade ordertillägg vid Payson'
 $_['entry_show_receipt_page']           = 'Visa Kvittosidan';
 $_['entry_show_receipt_page_yes']           = 'ja';
 $_['entry_show_receipt_page_no']           = 'nej';
+$_['entry_show_comments'] = 'Aktivera meddelande';
+$_['entry_show_comments_yes'] = 'ja';
+$_['entry_show_comments_no'] = 'nej';
 
 // Error
 $_['error_permission'] = 'Warning: You do not have permission to modify payment Payson module!';
@@ -86,5 +89,6 @@ $_['help_iframe_size_height_type'] = 'Ange höjden av iframe';
 $_['help_iframe_size_width_type'] = 'Ange bredden av iframe';
 $_['help_total'] = 'Kassan totala ordern m&aring;ste uppn&aring; innan betalningsmetod blir aktiv';
 $_['help_receipt'] = 'Välj Ja för Paysons kvittosidan eller Nej for Opencarts kvittosidan';
+$_['help_comments'] = 'Aktivera meddelande för beställningen';
 $_['help_totals_to_ignore'] = 'Kommaseparerad lista med ordertillägg som ej skall skickas till Payson';
 ?>

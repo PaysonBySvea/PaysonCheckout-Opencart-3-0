@@ -65,7 +65,7 @@ $_['entry_order_item_details_to_ignore'] = 'Order Item Details to ignore by Pays
 $_['entry_show_receipt_page'] = 'Show Receipt Page';
 $_['entry_show_receipt_page_yes'] = 'yes';
 $_['entry_show_receipt_page_no'] = 'No';
-$_['entry_show_comments'] = 'Comments about the Order';
+$_['entry_show_comments'] = 'Enable comments about the Order';
 $_['entry_show_comments_yes'] = 'yes';
 $_['entry_show_comments_no'] = 'no';
 // Error
