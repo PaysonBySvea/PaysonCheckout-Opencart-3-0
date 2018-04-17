@@ -7,7 +7,7 @@ $_['heading_title'] = 'Payson Checkout 2.0';
 
 // Text
 $_['text_modul_name'] = 'Payson Checkout 2.0';
-$_['text_modul_version'] = '1.0.0.3';
+$_['text_modul_version'] = '1.0.0.4';
 
 $_['text_payment'] = 'Payment';
 $_['text_extension']     = 'Extensions';
@@ -24,6 +24,10 @@ $_['merchant_id'] = 'Merchant id';
 $_['api_key'] = 'API-key';
 
 $_['secure_word'] = 'Secure word';
+
+$_['tab_api']               = 'API Details';
+$_['tab_order_status']      = 'Order status';
+$_['tab_checkout_scheme']   = 'Checkout scheme';
 
 $_['entry_total'] = 'Total';
 $_['entry_order_status'] = 'Order Status';

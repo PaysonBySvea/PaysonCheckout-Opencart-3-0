@@ -115,6 +115,10 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         $data['help_comments'] = $this->language->get('help_comments'); 
         $data['help_totals_to_ignore'] = $this->language->get('help_totals_to_ignore');
         $data['help_method_mode'] = $this->language->get('help_method_mode');
+        $data['tab_api'] = $this->language->get('tab_api');
+        $data['tab_general'] = $this->language->get('tab_general');
+        $data['tab_order_status'] = $this->language->get('tab_order_status');
+        $data['tab_checkout_scheme'] = $this->language->get('tab_checkout_scheme');
 
         if (isset($this->error['warning'])) {
             $data['error_warning'] = $this->error['warning'];
