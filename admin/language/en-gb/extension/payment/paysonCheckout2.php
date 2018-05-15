@@ -7,7 +7,7 @@ $_['heading_title'] = 'Payson Checkout 2.0';
 
 // Text
 $_['text_modul_name'] = 'Payson Checkout 2.0';
-$_['text_modul_version'] = '1.0.0.4';
+$_['text_modul_version'] = '1.0.0.5';
 
 $_['text_payment'] = 'Payment';
 $_['text_extension']     = 'Extensions';
