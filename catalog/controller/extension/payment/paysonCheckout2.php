@@ -412,10 +412,10 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
             $orderTotalType = PaysonEmbedded\OrderItemType::SERVICE;
 
             $orderTotalAmountTemp = 0;
-            if($orderTotal['value'] < 0) {
+            if((int)$orderTotal['sort_order'] >= (int)$this->config->get('total_tax_sort_order')){
               $orderTotalAmountTemp = $orderTotal['value'];  
             }else{
-                $orderTotalAmountTemp = ($orderTotal['value'])* (1 + ($orderTotal['lpa_tax']) / 100);
+                $orderTotalAmountTemp = $orderTotal['value'] * (1 + ($orderTotal['lpa_tax'] > 0 ? $orderTotal['lpa_tax'] / 100 : 0));
             }
             
             $orderTotalAmount = $this->currency->format($orderTotalAmountTemp, $order_data['currency_code'], $order_data['currency_value'], false) ;
