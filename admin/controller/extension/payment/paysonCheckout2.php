@@ -69,7 +69,12 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         $data['text_color_scheme_graysemi'] = $this->language->get('text_color_scheme_graysemi');
         $data['text_color_scheme_pitchblack'] = $this->language->get('text_color_scheme_pitchblack');
         $data['text_color_scheme_bright'] = $this->language->get('text_color_scheme_bright');
-           
+    
+        $data['entry_logotype'] = $this->language->get('entry_logotype');
+        $data['text_logotype_yes_left'] = $this->language->get('text_logotype_yes_left');
+        $data['text_logotype_yes_right'] = $this->language->get('text_logotype_yes_right');
+        $data['text_logotype_no'] = $this->language->get('text_logotype_no');
+
         $data['entry_verification'] = $this->language->get('entry_verification');
         $data['text_verification_bankid'] = $this->language->get('text_verification_bankid');
         $data['text_verification_none'] = $this->language->get('text_verification_none');
@@ -105,6 +110,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         $data['help_logg'] = $this->language->get('help_logg');
         $data['help_total'] = $this->language->get('help_total');
         $data['help_verification'] = $this->language->get('help_verification');
+        $data['help_logotype'] = $this->language->get('help_logotype');
         $data['help_request_phone'] = $this->language->get('help_request_phone');
         $data['help_color_scheme'] = $this->language->get('help_color_scheme');
         $data['help_iframe_size_height'] = $this->language->get('help_iframe_size_height');
@@ -243,7 +249,13 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         } else {
             $data['payment_paysonCheckout2_sort_order'] = $this->config->get('payment_paysonCheckout2_sort_order');
         }  
-                
+    
+        if (isset($this->request->post['payment_paysonCheckout2_logotype'])) {
+            $data['payment_paysonCheckout2_logotype'] = $this->request->post['payment_paysonCheckout2_logotype'];
+        } else {
+            $data['payment_paysonCheckout2_logotype'] = $this->config->get('payment_paysonCheckout2_logotype');
+        }
+
         if (isset($this->request->post['payment_paysonCheckout2_gui_verification'])) {
             $data['payment_paysonCheckout2_gui_verification'] = $this->request->post['payment_paysonCheckout2_gui_verification'];
         } else {

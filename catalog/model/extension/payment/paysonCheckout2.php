@@ -33,12 +33,22 @@ class ModelExtensionPaymentPaysonCheckout2 extends Model {
             $status = false;
         }
 
+        $paysonLogotype = '';
+        error_log($this->config->get('paysonCheckout2_logotype'));
+        if($this->config->get('payment_paysonCheckout2_logotype') == 3){
+            $paysonLogotype =  'Faktura, kort, bankbetalning <img src="catalog/view/image/payment/paysonCheckout2_P.png">';
+        }else if($this->config->get('payment_paysonCheckout2_logotype') == 2){
+           $paysonLogotype =  '<img src="catalog/view/image/payment/paysonCheckout2_P.png"> Faktura, kort, bankbetalning';
+        }else{
+            $paysonLogotype = 'Faktura, kort, bankbetalning';
+        }
+        
         $method_data = array();
 
         if ($status) {
             $method_data = array(
                 'code' => 'paysonCheckout2',
-                'title' => 'Faktura, kort, bankbetalning<br />',
+                'title' => $paysonLogotype,
                 'terms' => '',
                 'sort_order' => $this->config->get('payment_paysonCheckout2_sort_order')
             );

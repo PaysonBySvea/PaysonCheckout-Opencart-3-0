@@ -148,6 +148,24 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-logotype"><span data-toggle="tooltip" title="{{help_logotype}}">{{entry_logotype}}</span></label>
+                                <div class="col-sm-10">
+                                    <select name="payment_paysonCheckout2_logotype" id="input-logotype" class="form-control">
+                                        {% if payment_paysonCheckout2_logotype == false  %}
+                                        <option value="3">{{text_logotype_yes_right}}</option>
+                                        <option value="2">{{text_logotype_yes_left}}</option>
+                                        <option value="1" selected="selected">{{text_logotype_no}}</option>
+                                        {% else %}
+                                        <option>{{payment_paysonCheckout2_logotype}}</option>
+                                        <option value="3">{{text_logotype_yes_right}}</option>
+                                        <option value="2">{{text_logotype_yes_left}}</option>
+                                        <option value="1">{{text_logotype_no}}</option>
+                                        {% endif %}   
+                                    </select> 
+                                </div>
+                            </div> 
+                            
+                            <div class="form-group">
                                 <label class="col-sm-2 control-label" for="input-receipt"><span data-toggle="tooltip" title="{{help_receipt}}">{{entry_show_receipt_page}}</span></label>
                                 <div class="col-sm-10">
                                     <select name="payment_paysonCheckout2_receipt" id="input-receipt" class="form-control">  
