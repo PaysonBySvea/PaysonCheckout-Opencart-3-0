@@ -1,10 +1,9 @@
 <?php
-
 class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     private $testMode;
     public $data = array();
 
-    const MODULE_VERSION = 'paysonEmbedded_1.0.0.7';
+    const MODULE_VERSION = 'paysonEmbedded_1.1.0.0';
 
     function __construct($registry) {
         parent::__construct($registry);
@@ -13,8 +12,6 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
 
     public function index() {
         $this->load->language('extension/payment/paysonCheckout2');
-
-
         $this->data['text_payson_comments'] = $this->language->get('text_payson_comments');
         $this->data['is_comments'] = $this->config->get('payment_paysonCheckout2_comments') == 1?1:0;
         $this->data['error_checkout_id'] = $this->language->get('error_checkout_id');
@@ -24,10 +21,8 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
  
         //The customer return from Payson with status 'readyToPay' or 'denied'
         if (isset($this->request->get['snippet']) and $this->request->get['snippet'] !== Null) {
-        //$iframeSetup['heading_title'] = $this->language->get('heading_title');
             $this->load->model('checkout/order'); 
             $this->response->redirect($this->url->link('extension/payment/paysonCheckout21', 'status=readyToPay&snippet='.$this->getSnippetUrl($this->request->get['snippet']), true));
-            
         } else {
             $this->setupPurchaseData();
             return $this->load->view('extension/payment/paysonCheckout2', $this->data);
@@ -53,19 +48,18 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         $order_data = $this->model_checkout_order->getOrder($this->session->data['order_id']);
         $this->data['store_name'] = html_entity_decode($order_data['store_name'], ENT_QUOTES, 'UTF-8');
         $this->data['payson_comment'] = html_entity_decode($order_data['comment'], ENT_QUOTES, 'UTF-8');
-        //Payson send the responds to the shop.
-                
+        // URL:s
         $this->data['ok_url'] = $this->url->link('extension/payment/paysonCheckout2/returnFromPayson&order_id=' . $this->session->data['order_id']);
         $this->data['ipn_url'] = $this->url->link('extension/payment/paysonCheckout2/paysonIpn&order_id=' . $this->session->data['order_id']);
         $this->data['checkout_url'] = $this->url->link('extension/payment/paysonCheckout2/returnFromPayson&order_id=' . $this->session->data['order_id']);
         $this->data['terms_url'] = $this->url->link('information/information/agree', 'information_id=5');
-
+        // Order
         $this->data['order_id'] = $order_data['order_id'];
         $this->data['amount'] = $this->currency->format($order_data['total'] * 100, $order_data['currency_code'], $order_data['currency_value'], false) / 100;
         $this->data['currency_code'] = $order_data['currency_code'];
         $this->data['language_code'] = $order_data['language_code'];
         $this->data['salt'] = md5($this->config->get('payment_paysonCheckout2_secure_word')) . '1-' . $this->data['order_id'];
-        //Customer info
+        // Customer info
         $this->data['sender_email'] = (int)$order_data['customer_id'] > 0 ? $order_data['email'] : '';
         $this->data['sender_first_name'] = $this->customer->isLogged()? html_entity_decode($order_data['payment_firstname'], ENT_QUOTES, 'UTF-8') : $this->session->data['payment_address']['firstname'];
         $this->data['sender_last_name'] = $this->customer->isLogged()? html_entity_decode($order_data['payment_lastname'], ENT_QUOTES, 'UTF-8') : $this->session->data['payment_address']['lastname'];
@@ -74,96 +68,101 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         $this->data['sender_postcode'] = $this->customer->isLogged() ? html_entity_decode($order_data['payment_postcode'], ENT_QUOTES, 'UTF-8'): $this->session->data['payment_address']['postcode'];
         $this->data['sender_city'] = $this->customer->isLogged()? html_entity_decode($order_data['payment_city'], ENT_QUOTES, 'UTF-8') : $this->session->data['payment_address']['city'];
         $this->data['sender_countrycode'] = $this->customer->isLogged()? html_entity_decode($order_data['payment_iso_code_2'], ENT_QUOTES, 'UTF-8'): $this->session->data['payment_address']['iso_code_2'];
-
-        //Call PaysonAPI        
-        $result = $this->getPaymentURL();
+       
+        $result = $this->getPaysonCheckout();
         $returnData = array();
 
-        if ($result != NULL AND $result->status == "created") {
-            $this->data['checkoutId'] = $result->id;
+        if ($result != NULL AND $result['status'] == "created") {
+            $this->data['checkoutId'] = $result['id'];
             $this->data['width'] = (int) $this->config->get('payment_paysonCheckout2_iframe_size_width');
             $this->data['height'] = (int) $this->config->get('payment_paysonCheckout2_iframe_size_height');
             $this->data['width_type'] = $this->config->get('payment_paysonCheckout2_iframe_size_width_type');
             $this->data['height_type'] = $this->config->get('payment_paysonCheckout2_iframe_size_height_type');
             $this->data['testMode'] = !$this->testMode ? TRUE : FALSE;
-            $this->data['snippet'] = $result->snippet;
-            $this->data['status'] = $result->status;
+            $this->data['snippet'] = $result['snippet'];
+            $this->data['status'] = $result['status'];
         } else {
-
             $returnData["error"] = $this->language->get("text_payson_payment_error");
         }
     }
 
-    private function getPaymentURL() {
-        require_once 'paysonEmbedded/paysonapi.php';
+    private function getPaysonCheckout() {
         $this->load->language('extension/payment/paysonCheckout2');
 
-        $callPaysonApi = $this->getAPIInstanceMultiShop();
-        $paysonMerchant = new PaysonEmbedded\Merchant($this->data['checkout_url'], $this->data['ok_url'], $this->data['ipn_url'], $this->data['terms_url'], null, ('PaysonCheckout2.0_Opencart-3-0|' . $this->config->get('payment_paysonCheckout2_modul_version') . '|' . VERSION));
-       
-        $paysonMerchant->reference = $this->session->data['order_id'];
-        $payData = new PaysonEmbedded\PayData($this->currencypaysonCheckout2());
-
-        $this->getOrderItems($payData);
-
-        $gui = new PaysonEmbedded\Gui($this->languagepaysonCheckout2(), $this->config->get('payment_paysonCheckout2_color_scheme'), $this->config->get('payment_paysonCheckout2_gui_verification'), (int) $this->config->get('payment_paysonCheckout2_request_phone'));
-        if (!$this->testMode){
-            $customer = new PaysonEmbedded\Customer(
-                $this->data['sender_first_name'], $this->data['sender_last_name'], $this->data['sender_email'], $this->data['sender_telephone'], '', $this->data['sender_city'], $this->data['sender_countrycode'], $this->data['sender_postcode'], $this->data['sender_address']);
-        }else{
-            $customer = new PaysonEmbedded\Customer(
-                'Name', 'Last name', 'test@payson.se', '11111111', '4605092222', 'Stockholm', 'SE', '99999', 'Test address');
+        $paysonApi = $this->getAPIInstanceMultiShop();
+        $checkoutClient = new \Payson\Payments\CheckoutClient($paysonApi);
+        
+        $paysonMerchant = array(
+            'termsUri' => $this->data['terms_url'],
+            'checkoutUri' => $this->data['checkout_url'],
+            'confirmationUri' => $this->data['ok_url'],
+            'notificationUri' => $this->data['ipn_url'],
+            'integrationInfo' => ('PaysonCheckout2.0_Opencart-3-0|' . $this->config->get('payment_paysonCheckout2_modul_version') . '|' . VERSION),
+            'reference' => $this->session->data['order_id'],
+            'validationUri' => null,
+            'partnerId' => null,
+        );
+        
+        $paysonOrder = array(
+            'currency' => $this->currencypaysonCheckout2(),
+            'items' => $this->getOrderItems(),
+        );
+        
+        $paysonGui = array(
+             'colorScheme' => $this->config->get('payment_paysonCheckout2_color_scheme'),
+             'locale' => $this->languagepaysonCheckout2(),
+             'verification' => $this->config->get('payment_paysonCheckout2_gui_verification'),
+             'requestPhone' => (int) $this->config->get('payment_paysonCheckout2_request_phone'),
+         );
+        
+        if (!$this->testMode) {
+            $paysonCustomer = array(
+                'firstName' => $this->data['sender_first_name'],
+                'lastName' => $this->data['sender_last_name'],
+                'email' => $this->data['sender_email'],
+                'phone' => $this->data['sender_telephone'],
+                'identityNumber' => '',
+                'city' => $this->data['sender_city'],
+                'countryCode' => $this->data['sender_countrycode'],
+                'postalCode' => $this->data['sender_postcode'],
+                'street' => $this->data['sender_address']
+            );
+        } else {
+            $paysonCustomer = array(
+                'firstName' => 'Name',
+                'lastName' => 'Last name',
+                'email' => 'test@payson.se',
+                'phone' => '11111111',
+                'identityNumber' => '4605092222',
+                'city' => 'Stockholm',
+                'countryCode' => 'SE',
+                'postalCode' => '99999',
+                'street' => 'Test address'
+            );
         }
-        $checkout = new PaysonEmbedded\Checkout($paysonMerchant, $payData, $gui, $customer);
-    
-        $checkoutTempObj = NULL;
+        
+        $checkoutData = array('merchant' => $paysonMerchant, 'order' => $paysonOrder, 'gui' => $paysonGui, 'customer' => $paysonCustomer);
         
         try {
-            $paysonEmbeddedStatus = '';
             if ($this->getCheckoutIdPayson($this->session->data['order_id']) != Null) {
-                $checkoutTempObj = $callPaysonApi->GetCheckout($this->getCheckoutIdPayson($this->session->data['order_id']));
-                //$callPaysonApi->doRequest('GET', $this->getCheckoutIdPayson($this->session->data['order_id']));
-                $paysonEmbeddedStatus = $checkoutTempObj->status;
-            }
-
-            if ($this->getCheckoutIdPayson($this->session->data['order_id']) != Null AND $paysonEmbeddedStatus == 'created') {
-                $checkoutIdTemp = $callPaysonApi->CreateCheckout($checkout);
-                $checkoutTemp = $callPaysonApi->GetCheckout($checkoutIdTemp);
-                $checkoutTempObj = $callPaysonApi->UpdateCheckout($checkoutTemp);
-
-                if ($checkoutTempObj->id != null) {
-                    $this->storePaymentResponseDatabase($checkoutTempObj->id, $this->session->data['order_id']);
-                }
+                $checkout = $checkoutClient->get(array('id' => $this->getCheckoutIdPayson($this->session->data['order_id'])));
             } else {
-                $checkoutId = $callPaysonApi->CreateCheckout($checkout);
-                $checkoutTempObj = $callPaysonApi->GetCheckout($checkoutId);
-
-                if ($checkoutTempObj->id != null) {
-                    $this->storePaymentResponseDatabase($checkoutTempObj->id, $this->session->data['order_id']);
-                }
+                $checkout = $checkoutClient->create($checkoutData);
             }
-            //$callPaysonApi->doRequest();
 
-            return $checkoutTempObj;
+            if ($checkout['id'] != null) {
+                $this->storePaymentResponseDatabase($checkout['id'], $this->session->data['order_id']);
+            }
+
+            return $checkout;
         } catch (Exception $e) {
-            $message = '<Payson OpenCart Checkout 2.0> ' . $e->getMessage();
-            $this->writeToLog($message);
+            $this->writeToLog($e->getMessage());
             $this->load->model('extension/payment/paysonCheckout2');
-            //$status = $this->session->data['status'];
-            //$this->model_payment_paysonCheckout2;
-                    
-            //echo '<pre>';print_r($this->model_payment_paysonCheckout2->config);echo '</pre>';exit;
-            //$class = new ModelPaymentPaysonCheckout2();
-            
-            //return NULL;
-           // $this->paysonApiError('ERROR');
         }
     }
 
     //Returns from Payson after the transaction has ended.
     public function returnFromPayson() {
-
-        require_once 'paysonEmbedded/paysonapi.php';
         $this->load->model('checkout/order');
         $this->load->language('extension/payment/paysonCheckout2');
         
@@ -193,20 +192,20 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
                         
             $this->response->redirect($this->url->link('checkout/checkout'));
         } 
-        //error_log(print_r($this->getAPIInstanceMultiShop(),true));
         
-        $callPaysonApi = $this->getAPIInstanceMultiShop();
+        $paysonApi = $this->getAPIInstanceMultiShop();
+        $checkoutClient = new \Payson\Payments\CheckoutClient($paysonApi);
         try {
             //Check if the checkoutid exist in the database.
             if (isset($this->request->get['order_id'])) {
                 $orderId = $this->request->get['order_id'];
-                $checkoutObj = $callPaysonApi->GetCheckout($this->getCheckoutIdPayson($orderId));
+                $checkout = $checkoutClient->get(array('id' => $this->getCheckoutIdPayson($orderId)));
 
                 //This row update database with info from the return object.
-                $this->updatePaymentResponseDatabase($checkoutObj, $this->getCheckoutIdPayson($orderId), 'returnCall');
+                $this->updatePaymentResponseDatabase($checkout, $this->getCheckoutIdPayson($orderId), 'returnCall');
                 //Create the order order
 
-                $this->handlePaymentDetails($checkoutObj, $orderId, 'returnCall');
+                $this->handlePaymentDetails($checkout, $orderId, 'returnCall');
             } else {
                 $this->writeToLog('orderid: ' . isset($this->request->get['order_id']) ? $this->request->get['order_id'] : $this->session->data['order_id']);
                 $this->response->redirect($this->url->link('checkout/checkout'));
@@ -224,7 +223,6 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         
         $callPaysonApi = $this->getAPIInstanceMultiShop();
         try {
-            
                 //Check if the checkoutid exist in the database.
                 if (isset($this->request->get['checkout'])) {
                     $checkoutID = $this->request->get['checkout'];
@@ -243,16 +241,16 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
 
     /**
      * 
-     * @param PaymentDetails $paymentDetails
+     * @param Checkout $checkout
      */
-    private function handlePaymentDetails($paymentResponsObject, $orderId = 0, $ReturnCallUrl = Null) {
+    private function handlePaymentDetails($checkout, $orderId = 0, $ReturnCallUrl = Null) {
         $this->load->language('extension/payment/paysonCheckout2');
         $this->load->model('checkout/order');
 
         $orderIdTemp = $orderId ? $orderId : $this->session->data['order_id'];
 
-        $paymentStatus = $paymentResponsObject->status;
-        $paymentCheckoutId = $paymentResponsObject->id;
+        $paymentStatus = $checkout['status'];
+        $paymentCheckoutId = $checkout['id'];
 
         $order_info = $this->model_checkout_order->getOrder($orderIdTemp);
         if (!$order_info) {
@@ -273,25 +271,22 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
                 }
                 
                 $this->db->query("UPDATE `" . DB_PREFIX . "order` SET
-                                firstname  = '" . $paymentResponsObject->customer->firstName . "',
-                                lastname  = '" . $paymentResponsObject->customer->lastName . "',
-                                telephone  = '" . ($paymentResponsObject->customer->phone?$paymentResponsObject->customer->phone:'')."',
-                                email               = '" . $paymentResponsObject->customer->email . "',
-								
-								payment_firstname  = '" . $paymentResponsObject->customer->firstName . "',
-                                payment_lastname   = '" . $paymentResponsObject->customer->lastName . "',
-                                payment_address_1  = '" . $paymentResponsObject->customer->street . "',
-                                payment_city       = '" . $paymentResponsObject->customer->city . "', 
-                                payment_country    = '" . $paymentResponsObject->customer->countryCode . "', 
-                                payment_postcode   = '" . $paymentResponsObject->customer->postalCode . "',
-								
-				                shipping_firstname  = '" . $paymentResponsObject->customer->firstName . "',
-                                shipping_lastname   = '" . $paymentResponsObject->customer->lastName . "',
-                                shipping_address_1  = '" . $paymentResponsObject->customer->street . "',
-                                shipping_city       = '" . $paymentResponsObject->customer->city . "', 
-                                shipping_country    = '" . $paymentResponsObject->customer->countryCode . "', 
-                                shipping_postcode   = '" . $paymentResponsObject->customer->postalCode . "',
-								
+                                firstname  = '" . $checkout['customer']['firstName'] . "',
+                                lastname  = '" . $checkout['customer']['lastName'] . "',
+                                telephone  = '" . ($checkout['customer']['phone']?$checkout['customer']['phone']:'')."',
+                                email               = '" . $checkout['customer']['email'] . "',
+                                payment_firstname  = '" . $checkout['customer']['firstName'] . "',
+                                payment_lastname   = '" . $checkout['customer']['lastName'] . "',
+                                payment_address_1  = '" . $checkout['customer']['street'] . "',
+                                payment_city       = '" . $checkout['customer']['city'] . "', 
+                                payment_country    = '" . $checkout['customer']['countryCode'] . "',
+                                payment_postcode   = '" . $checkout['customer']['postalCode'] . "',	
+                                shipping_firstname  = '" . $checkout['customer']['firstName'] . "',
+                                shipping_lastname   = '" . $checkout['customer']['lastName'] . "',
+                                shipping_address_1  = '" . $checkout['customer']['street'] . "',
+                                shipping_city       = '" . $checkout['customer']['city'] . "', 
+                                shipping_country    = '" . $checkout['customer']['countryCode'] . "', 
+                                shipping_postcode   = '" . $checkout['customer']['postalCode'] . "',			
                                 payment_code        = 'paysonCheckout2'
                                 WHERE order_id      = '" . $orderIdTemp . "'");
                 
@@ -305,28 +300,28 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
 
                 if ($showReceiptPage == 1) {
                     $this->unsetData($orderIdTemp);
-                    $this->response->redirect($this->url->link('extension/payment/paysonCheckout2/index', 'snippet=' . $paymentResponsObject->snippet));
+                    $this->response->redirect($this->url->link('extension/payment/paysonCheckout2/index', 'snippet=' . $checkout['snippet']));
                 } else {
                     $this->response->redirect($this->url->link('checkout/success'));
                 }
                 break;
             case "readyToPay":
-                if ($paymentResponsObject->id != Null) {
+                if ($checkout['id'] != Null) {
                     //$this->response->redirect($this->url->link('checkout/cart'));
-                    $this->response->redirect($this->url->link('extension/payment/paysonCheckout2/index', 'snippet=' . $paymentResponsObject->snippet));
+                    $this->response->redirect($this->url->link('extension/payment/paysonCheckout2/index', 'snippet=' . $checkout['snippet']));
                 }
                 break;
             case "denied":
                 $this->paysonApiError($this->language->get('text_denied'));
-                $this->updatePaymentResponseDatabase($paymentResponsObject, $orderId, $ReturnCallUrl);
+                $this->updatePaymentResponseDatabase($checkout, $orderId, $ReturnCallUrl);
                 $this->response->redirect($this->url->link('checkout/cart'));
                 break;
             case "canceled":
-                $this->updatePaymentResponseDatabase($paymentResponsObject, $orderId, $ReturnCallUrl);
+                $this->updatePaymentResponseDatabase($checkout, $orderId, $ReturnCallUrl);
                 $this->response->redirect($this->url->link('checkout/cart'));
                 break;
             case "Expired":
-                $this->writeToLog('Order was Expired by payson.&#10;Checkout status:&#9;&#9;' . $paymentStatus . '&#10;Checkout id:&#9;&#9;&#9;&#9;' . $paymentCheckoutId, $paymentResponsObject);
+                $this->writeToLog('Order was Expired by payson.&#10;Checkout status:&#9;&#9;' . $paymentStatus . '&#10;Checkout id:&#9;&#9;&#9;&#9;' . $paymentCheckoutId, $checkout);
                 return false;
                 break;
             default:
@@ -343,7 +338,6 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         //Since the store table do not contain the fist storeID this must be entered manualy in the $shopArray below
         $shopArray = array(0 => 0);
         for ($i = 0; $i < count($numberOfStores); $i++) {
-
             foreach ($numberOfStores[$keys[$i]] as $value) {
                 array_push($shopArray, $value);
             }
@@ -352,30 +346,31 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     }
 
     private function getAPIInstanceMultiShop() {
-        require_once 'paysonEmbedded/paysonapi.php';
-        /* Every interaction with Payson goes through the PaysonApi object which you set up as follows.  
-         * For the use of our test or live environment use one following parameters:
-         * TRUE: Use test environment, FALSE: use live environment */
-       
-        if (!$this->testMode) {
-            $merchant = explode('##', $this->config->get('payment_paysonCheckout2_merchant_id'));
-            $key = explode('##', $this->config->get('payment_paysonCheckout2_api_key'));
-            $storeID = $this->config->get('config_store_id');
-
-            $shopArray = $this->getCredentials();
-            $multiStore = array_search($storeID, $shopArray);
-
-            $merchant_id = $merchant[$multiStore];
-            $api_key = $key[$multiStore];
-            return new PaysonEmbedded\PaysonApi($merchant_id, $api_key, FALSE);
-        } else {
-            return new PaysonEmbedded\PaysonApi('4', '2acab30d-fe50-426f-90d7-8c60a7eb31d4', TRUE);
+        require_once(DIR_SYSTEM . '../system/library/paysonpayments/include.php');
+        
+        $apiUrl = \Payson\Payments\Transport\Connector::PROD_BASE_URL;
+        
+        $merchant = explode('##', $this->config->get('payment_paysonCheckout2_merchant_id'));
+        $key = explode('##', $this->config->get('payment_paysonCheckout2_api_key'));
+        $storeID = $this->config->get('config_store_id');
+        $shopArray = $this->getCredentials();
+        $multiStore = array_search($storeID, $shopArray);
+        $agentId = $merchant[$multiStore];
+        $apiKey = $key[$multiStore];
+        
+        if ($this->testMode) {
+            $apiUrl = \Payson\Payments\Transport\Connector::TEST_BASE_URL;
+            if (strlen($agentId) < 1 && strlen($apiKey) < 1) {
+                $agentId = '4';
+                $apiKey = '2acab30d-fe50-426f-90d7-8c60a7eb31d4';
+            }
         }
+        
+        return \Payson\Payments\Transport\Connector::init($agentId, $apiKey, $apiUrl);
     }
 
-    private function getOrderItems($payData) {
-        require_once 'paysonEmbedded/orderitem.php';
-
+    private function getOrderItems() {
+        $orderitemslist = array();
         $this->load->language('extension/payment/paysonCheckout2');
 
         $orderId = $this->session->data['order_id'];
@@ -403,13 +398,20 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
             $productTitle = (strlen($productTitle) > 80 ? substr($productTitle, 0, strpos($productTitle, ' ', 80)) : $productTitle);
             $product_price = $this->currency->format(($product['price'] + ($product['price'] * $product['tax_rate'])), $order_data['currency_code'], $order_data['currency_value'], false);
 
-            $payData->AddOrderItem(new PaysonEmbedded\OrderItem(html_entity_decode($productTitle, ENT_QUOTES, 'UTF-8'), $product_price, $product['quantity'], $product['tax_rate'], $product['model']));
+            //$payData->AddOrderItem(new PaysonEmbedded\OrderItem(html_entity_decode($productTitle, ENT_QUOTES, 'UTF-8'), $product_price, $product['quantity'], $product['tax_rate'], $product['model']));
+            $orderitemslist[] = array(
+                'name' => html_entity_decode($productTitle, ENT_QUOTES, 'UTF-8'),
+                'unitPrice' => $product_price,
+                'quantity' => $product['quantity'],
+                'taxrate' => $product['tax_rate'],
+                'reference' => $product['model']
+            );
         }
 
         $orderTotals = $this->getOrderTotals();
        
         foreach ($orderTotals as $orderTotal) {
-            $orderTotalType = PaysonEmbedded\OrderItemType::SERVICE;
+            $orderTotalType = 'SERVICE';
 
             $orderTotalAmountTemp = 0;
             if((int)$orderTotal['sort_order'] >= (int)$this->config->get('total_tax_sort_order')){
@@ -425,35 +427,39 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
             }
 
             if ($orderTotal['code'] == 'coupon') {
-                $orderTotalType = PaysonEmbedded\OrderItemType::DISCOUNT;
+                $orderTotalType = 'DISCOUNT';
             }
 
             if ($orderTotal['code'] == 'voucher') {
-                $orderTotalType = PaysonEmbedded\OrderItemType::DISCOUNT;
+                $orderTotalType = 'DISCOUNT';
             }
 
             if ($orderTotal['code'] == 'shipping') {
-                $orderTotalType = PaysonEmbedded\OrderItemType::SERVICE;
+                $orderTotalType = 'SERVICE';
             }
 
             if($orderTotalAmount < 0) {
-                $orderTotalType = PaysonEmbedded\OrderItemType::DISCOUNT;
+                $orderTotalType = 'DISCOUNT';
             }  
 
-            $payData->AddOrderItem(new PaysonEmbedded\OrderItem(html_entity_decode($orderTotal['title'], ENT_QUOTES, 'UTF-8'), $orderTotalAmount, 1, ($orderTotal['lpa_tax']) / 100, $orderTotal['code'], $orderTotalType));
+            $orderitemslist[] = array(
+                'name' => html_entity_decode($orderTotal['title'], ENT_QUOTES, 'UTF-8'),
+                'unitPrice' => $orderTotalAmount,
+                'quantity' => 1,
+                'taxrate' => ($orderTotal['lpa_tax']) / 100,
+                'reference' => $orderTotal['code'],
+                'type' => $orderTotalType
+            );
         }
         
         if ($this->config->get('payment_paysonCheckout2_logg') == 1) {
-            $this->writeArrayToLog($payData->toJson(), 'Items list: ');
+            $this->writeArrayToLog($orderitemslist, 'Items list: ');
         }
+        
+        return $orderitemslist;
      
     }
 
-    
-    
-   
-    
-    
     private function getOrderTotals() {
         // Totals
         $this->load->model('setting/extension');
@@ -474,7 +480,6 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         $sort_order = array();
 
         $results = $this->model_setting_extension->getExtensions('total');
-
 
         foreach ($results as $key => $value) {
                 if (isset($value['code'])) {
@@ -551,25 +556,24 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         return $totals;
     }
     
-
     /** 
-     * @param PaymentDetails $paymentDetails
+     * @param $checkout
      * @param checkout_id int $id
      */
-    private function updatePaymentResponseDatabase($paymentDetails, $id, $call = 'returnCall') {
+    private function updatePaymentResponseDatabase($checkout, $id, $call = 'returnCall') {
         $this->db->query("UPDATE `" . DB_PREFIX . "payson_embedded_order` SET 
-                        payment_status  = '" . $paymentDetails->status . "',
+                        payment_status  = '" . $checkout['status'] . "',
                         updated                       = NOW(), 
                         sender_email                  = 'sender_email', 
                         currency_code                 = 'currency_code',
                         tracking_id                   = 'tracking_id',
                         type                          = 'type',
-                        shippingAddress_name          = '" . $paymentDetails->customer->firstName . "', 
-                        shippingAddress_lastname      = '" . $paymentDetails->customer->lastName . "', 
-                        shippingAddress_street_ddress = '" . $paymentDetails->customer->street . "',
-                        shippingAddress_postal_code   = '" . $paymentDetails->customer->postalCode . "',
-                        shippingAddress_city          = '" . $paymentDetails->customer->city . "', 
-                        shippingAddress_country       = '" . $paymentDetails->customer->countryCode . "'
+                        shippingAddress_name          = '" . $checkout['customer']['firstName'] . "', 
+                        shippingAddress_lastname      = '" . $checkout['customer']['lastName'] . "', 
+                        shippingAddress_street_ddress = '" . $checkout['customer']['street'] . "',
+                        shippingAddress_postal_code   = '" . $checkout['customer']['postalCode'] . "',
+                        shippingAddress_city          = '" . $checkout['customer']['city'] . "', 
+                        shippingAddress_country       = '" . $checkout['customer']['countryCode'] . "'
 			WHERE  checkout_id            = '" . $id . "'"
         );
     }
@@ -623,14 +627,6 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
 
             $this->model_account_activity->addActivity('order_account', $activity_data);
         }
-//			else {
-//				$activity_data = array(
-//					'name'     => $this->session->data['guest']['firstname'] . ' ' . $this->session->data['guest']['lastname'],
-//					'order_id' => $order_id
-//				);
-//
-//				$this->model_account_activity->addActivity('order_guest', $activity_data);
-//			}
 
         unset($this->session->data['shipping_method']);
         unset($this->session->data['shipping_methods']);
@@ -675,12 +671,11 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     /**
      * 
      * @param string $message
-     * @param PaymentDetails $paymentDetails
+     * @param PaymentResponsObject $paymentResponsObject
      */
     function writeToLog($message, $paymentResponsObject = False) {
         $paymentDetailsFormat = "Payson reference:&#9;%s&#10;Correlation id:&#9;%s&#10;";
         if ($this->config->get('payment_paysonCheckout2_logg') == 1) {
-
             $this->log->write('PAYSON CHECKOUT 2.0&#10;' . $message . '&#10;' . ($paymentResponsObject != false ? sprintf($paymentDetailsFormat, $paymentResponsObject->status, $paymentResponsObject->id) : '') . $this->writeModuleInfoToLog());
         }
     }
@@ -723,5 +718,3 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     }
 
 }
-
-?>
