@@ -3,7 +3,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     private $testMode;
     public $data = array();
 
-    const MODULE_VERSION = 'paysonEmbedded_1.1.0.0';
+    const MODULE_VERSION = 'paysonEmbedded_1.1.0.1';
 
     function __construct($registry) {
         parent::__construct($registry);
@@ -217,20 +217,20 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     }
 
     function paysonIpn() {
-        require_once 'paysonEmbedded/paysonapi.php';
         $this->load->model('checkout/order');
         $this->load->language('extension/payment/paysonCheckout2');
         
-        $callPaysonApi = $this->getAPIInstanceMultiShop();
+        $paysonApi = $this->getAPIInstanceMultiShop();
+        $checkoutClient = new \Payson\Payments\CheckoutClient($paysonApi);
         try {
                 //Check if the checkoutid exist in the database.
                 if (isset($this->request->get['checkout'])) {
                     $checkoutID = $this->request->get['checkout'];
-                    $checkoutObj = $callPaysonApi->GetCheckout($checkoutID);
+                    $checkout = $checkoutClient->get(array('id' => $checkoutID));
                     //This row update database with info from the return object.
-                    $this->updatePaymentResponseDatabase($checkoutObj , $checkoutID, 'ipnCall');
+                    $this->updatePaymentResponseDatabase($checkout , $checkoutID, 'ipnCall');
                     //Create, canceled or dinaid the order.
-                    $this->handlePaymentDetails($checkoutObj, $this->request->get['order_id'], 'ipnCall');
+                    $this->handlePaymentDetails($checkout, $this->request->get['order_id'], 'ipnCall');
                 }
          
         } catch (Exception $e) {
