@@ -3,7 +3,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     private $testMode;
     public $data = array();
 
-    const MODULE_VERSION = 'paysonEmbedded_1.1.0.1';
+    const MODULE_VERSION = 'paysonEmbedded_1.1.0.2';
 
     function __construct($registry) {
         parent::__construct($registry);
@@ -602,6 +602,15 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         }
     }
 
+    private function getPaysonEmbeddedOrder($order_id) {
+        $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "payson_embedded_order` WHERE order_id = '" . (int) $order_id . "' ORDER BY `added` DESC");
+        if($query->num_rows){
+           return $query->row;
+        } else {
+            return null;
+        } 
+    }
+
     private function getOrderIdPayson($checkout_id) {
         $query = $this->db->query("SELECT `order_id` FROM `" . DB_PREFIX . "payson_embedded_order` WHERE checkout_id = '" . (int) $order_id . "' AND payment_status = 'created'");
         if ($query->num_rows && $query->row['checkout_id']) {
@@ -690,6 +699,11 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         return 'Module version: ' . $this->config->get('payment_paysonCheckout2_modul_version') . '&#10;------------------------------------------------------------------------&#10;';
     }
 
+    private function writeTextToLog($additionalInfo = "") {
+        $module_version = 'Module version: ' . $this->config->get('payment_paysonCheckout2_modul_version') . '&#10;------------------------------------------------------------------------&#10;';
+        $this->log->write('PAYSON CHECKOUT 2.0' . $additionalInfo . '&#10;&#10;'.$module_version);
+    }
+
     public function paysonComments(){
         $this->load->model('checkout/order');
         if(isset($this->request->get['payson_comments']) && !empty($this->request->get['payson_comments'])){
@@ -716,5 +730,64 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         echo ($error_code);
         exit;
     }
+
+    public function notifyStatusToPayson($route, &$data){
+        //require_once(DIR_SYSTEM . '../system/library/paysonpayments/include.php');
+        $getCheckoutObject = $this->getPaysonEmbeddedOrder($data[0]);
+        if($getCheckoutObject['checkout_id'] && ($getCheckoutObject['payment_status'] == 'readyToShip' || $getCheckoutObject['payment_status'] == 'shipped' || $getCheckoutObject['payment_status'] == 'paidToAccount'))
+        {
+            try
+            {
+                $additionalInfo = '';
+                $paysonApi = $this->getAPIInstanceMultiShop();
+                $checkoutClient = new \Payson\Payments\CheckoutClient($paysonApi);
+                $checkout = $checkoutClient->get(array('id' => $getCheckoutObject['checkout_id']));
+                
+                if($data[1] == $this->config->get('payment_paysonCheckout2_order_status_shipped_id')) 
+                { 
+                    $checkout['status'] = 'shipped';
+                    $checkout = $checkoutClient->update($checkout);
+                }
+                elseif($data[1] == $this->config->get('payment_paysonCheckout2_order_status_canceled_id')) 
+                {
+                    $checkout['status'] = 'canceled';
+                    $checkout = $checkoutClient->update($checkout);
+                }
+                elseif($data[1] == $this->config->get('payment_paysonCheckout2_order_status_refunded_id')) 
+                {
+                    if ($checkout['status'] == 'readyToShip' || $checkout['status']== 'shipped' || $checkout['status'] == 'paidToAccount') 
+                    {
+                        if ($checkout['status'] == 'readyToShip') 
+                        {
+                            $checkout['status'] = 'shipped';
+                            $checkout = $checkoutClient->update($checkout);
+                        }
+                        //$checkoutsList = $checkoutClient->listCheckouts($data);
+                        foreach ($checkout['order']['items'] as &$item) 
+                        {
+                            $item['creditedAmount'] = ($item['totalPriceIncludingTax']);
+                        }
+                        unset($item);
+                        $checkout = $checkoutClient->update($checkout);
+                    }
+                }
+                else
+                {
+                    // Do nothing
+                }
+                $additionalInfo = '&#10;Notification is sent on  :&#9;&#10;&#10; Status: '. $checkout['status']. '&#10;&#10; Order: ' . $data[0]. '&#10;&#10; checkout: ' . $checkout['id'] . '&#10;&#10; Payson-ref: '. $checkout['purchaseId'];
+                $this->writeTextToLog($additionalInfo);
+            } 
+            catch (Exception $e) 
+            {
+                $message = '<Payson OpenCart Checkout 2.0 -  - Payson Order Status> &#10;' . $e->getMessage() . '&#10;'.  $e->getCode();
+                $this->writeToLog($message);
+            }
+        }
+        else
+        {
+            //Do nothing
+        }
+    }  
 
 }
