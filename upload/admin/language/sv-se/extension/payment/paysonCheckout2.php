@@ -7,7 +7,7 @@ $_['paysonCheckout2_example'] = 'Example Extra Text';
 $_['heading_title'] = 'Payson Checkout 2.0';
 // Text
 $_['text_modul_name'] = 'Payson Checkout 2.0';
-$_['text_modul_version'] = '1.1.0.1';
+$_['text_modul_version'] = '1.1.0.2';
 $_['text_payment'] = 'Payment';
 $_['text_extension']     = 'Extensions';
 $_['text_success'] = 'Success: Du har &auml;ndrat Payson Checkout 2.0 modulen!';
@@ -30,6 +30,9 @@ $_['tab_checkout_scheme']   = 'Checkout scheme';
 
 $_['entry_total'] = 'Totalt';
 $_['entry_order_status'] = 'Order Status';
+$_['entry_order_status_shipped'] = 'Orderstatus för skickad order';
+$_['entry_order_status_canceled'] = 'Orderstatus för avbruten order';
+$_['entry_order_status_refunded'] = 'Orderstatus för krediterad order';
 $_['entry_geo_zone'] = 'Geo Zone';
 $_['entry_status'] = 'Status';
 $_['entry_sort_order'] = 'Sorteringsordning';
@@ -101,4 +104,7 @@ $_['help_total'] = 'Kassan totala ordern m&aring;ste uppn&aring; innan betalning
 $_['help_receipt'] = 'Välj Ja för Paysons kvittosidan eller Nej for Opencarts kvittosidan';
 $_['help_comments'] = 'Aktivera meddelande för beställningen';
 $_['help_totals_to_ignore'] = 'Kommaseparerad lista med ordertillägg som ej skall skickas till Payson';
+$_['help_order_status_shipped'] = 'Meddela Payson att order har skickats';
+$_['help_order_status_canceled'] = 'Meddela Payson att order har avbrutits';
+$_['help_order_status_refunded'] = 'Meddela Payson att order ska krediteras';
 ?>

@@ -7,7 +7,7 @@ $_['heading_title'] = 'Payson Checkout 2.0';
 
 // Text
 $_['text_modul_name'] = 'Payson Checkout 2.0';
-$_['text_modul_version'] = '1.1.0.1';
+$_['text_modul_version'] = '1.1.0.2';
 
 $_['text_payment'] = 'Payment';
 $_['text_extension']     = 'Extensions';
@@ -31,6 +31,9 @@ $_['tab_checkout_scheme']   = 'Checkout scheme';
 
 $_['entry_total'] = 'Total';
 $_['entry_order_status'] = 'Order Status';
+$_['entry_order_status_shipped'] = 'Order Status Shipped';
+$_['entry_order_status_canceled'] = 'Order Status Canceled';
+$_['entry_order_status_refunded'] = 'Order Status Refunded';
 $_['entry_geo_zone'] = 'Geo Zone';
 $_['entry_status'] = 'Status';
 $_['entry_sort_order'] = 'Sort Order';
@@ -101,4 +104,7 @@ $_['help_total'] = 'The checkout total the order must reach before this payment 
 $_['help_receipt'] = 'Select yes for Payson receipt or no for Opencart receipt';
 $_['help_comments'] = 'Select yes or no to enable/disable comments about the order';
 $_['help_totals_to_ignore'] = 'Comma separated list with order totals not to send to payson';
+$_['help_order_status_shipped'] = 'Notify Payson that the order has been shipped';
+$_['help_order_status_canceled'] = 'Notify Payson that the order has been canceled';
+$_['help_order_status_refunded'] = 'Notify Payson that the order has been refunded';
 ?>

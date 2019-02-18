@@ -207,7 +207,52 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                            </div>  
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-order-status-shipped"><span data-toggle="tooltip" title="{{ help_order_status_shipped }}">{{ entry_order_status_shipped }}</span></label>
+                                <div class="col-sm-10">
+                                    <select name="payment_paysonCheckout2_order_status_shipped_id" id="input-order-status-shipped" class="form-control">
+                                        {% for order_status in order_statuses %}
+                                        {% if order_status.order_status_id == payment_paysonCheckout2_order_status_shipped_id %}
+                                        <option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status.name }}</option>
+                                        {% else %}
+                                        <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>                                     
+                                    
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-order-status-canceled"><span data-toggle="tooltip" title="{{ help_order_status_canceled }}">{{ entry_order_status_canceled }}</span></label>
+                                <div class="col-sm-10">
+                                    <select name="payment_paysonCheckout2_order_status_canceled_id" id="input-order-status-canceled" class="form-control">
+                                        {% for order_status in order_statuses %}
+                                        {% if order_status.order_status_id == payment_paysonCheckout2_order_status_canceled_id %}
+                                        <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                                        {% else %}
+                                        <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div> 
+                                    
+                             <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-order-status-refunded"><span data-toggle="tooltip" title="{{ help_order_status_refunded }}">{{ entry_order_status_refunded }}</span></label>
+                                <div class="col-sm-10">
+                                    <select name="payment_paysonCheckout2_order_status_refunded_id" id="input-order-status-refunded" class="form-control">
+                                        {% for order_status in order_statuses %}
+                                        {% if order_status.order_status_id == payment_paysonCheckout2_order_status_refunded_id %}
+                                        <option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status.name }}</option>
+                                        {% else %}
+                                        <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>   
                         </div>
                                     
                         <div class="tab-pane" id="tab-checkout-scheme">
