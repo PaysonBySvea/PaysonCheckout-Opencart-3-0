@@ -104,6 +104,7 @@ $_['help_total'] = 'Kassan totala ordern m&aring;ste uppn&aring; innan betalning
 $_['help_receipt'] = 'Välj Ja för Paysons kvittosidan eller Nej for Opencarts kvittosidan';
 $_['help_comments'] = 'Aktivera meddelande för beställningen';
 $_['help_totals_to_ignore'] = 'Kommaseparerad lista med ordertillägg som ej skall skickas till Payson';
+$_['help_order_status'] = 'Ange efter OpenCart efter att kunden har slutfört en betalning eller när en faktura kan skickas';
 $_['help_order_status_shipped'] = 'Meddela Payson att order har skickats';
 $_['help_order_status_canceled'] = 'Meddela Payson att order har avbrutits';
 $_['help_order_status_refunded'] = 'Meddela Payson att order ska krediteras';
