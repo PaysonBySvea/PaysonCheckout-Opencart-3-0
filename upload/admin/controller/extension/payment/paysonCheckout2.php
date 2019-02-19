@@ -218,26 +218,34 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
 
         if (isset($this->request->post['payment_paysonCheckout2_order_status_id'])) {
             $data['payment_paysonCheckout2_order_status_id'] = $this->request->post['payment_paysonCheckout2_order_status_id'];
-        } else {
+        } elseif ($this->config->get('payment_paysonCheckout2_order_status_id') !== null) {
             $data['payment_paysonCheckout2_order_status_id'] = $this->config->get('payment_paysonCheckout2_order_status_id');
+        } else {
+            $data['payment_paysonCheckout2_order_status_id'] = 5;
         }
 
         if (isset($this->request->post['payment_paysonCheckout2_order_status_shipped_id'])) {
             $data['payment_paysonCheckout2_order_status_shipped_id'] = $this->request->post['payment_paysonCheckout2_order_status_shipped_id'];
-        } else {
+        } elseif ($this->config->get('payment_paysonCheckout2_order_status_shipped_id') !== null) {
             $data['payment_paysonCheckout2_order_status_shipped_id'] = $this->config->get('payment_paysonCheckout2_order_status_shipped_id');
+        } else {
+            $data['payment_paysonCheckout2_order_status_shipped_id'] = 1; //Pending
         }
 
         if (isset($this->request->post['payment_paysonCheckout2_order_status_canceled_id'])) {
             $data['payment_paysonCheckout2_order_status_canceled_id'] = $this->request->post['payment_paysonCheckout2_order_status_canceled_id'];
-        } else {
+        } elseif ($this->config->get('payment_paysonCheckout2_order_status_canceled_id') !== null) {
             $data['payment_paysonCheckout2_order_status_canceled_id'] = $this->config->get('payment_paysonCheckout2_order_status_canceled_id');
+        }else {
+            $data['payment_paysonCheckout2_order_status_canceled_id'] = 1; //Pending
         }
 
         if (isset($this->request->post['payment_paysonCheckout2_order_status_refunded_id'])) {
             $data['payment_paysonCheckout2_order_status_refunded_id'] = $this->request->post['payment_paysonCheckout2_order_status_refunded_id'];
-        } else {
+        } elseif($this->config->get('payment_paysonCheckout2_order_status_refunded_id') !== null) {
             $data['payment_paysonCheckout2_order_status_refunded_id'] = $this->config->get('payment_paysonCheckout2_order_status_refunded_id');
+        } else {
+            $data['payment_paysonCheckout2_order_status_refunded_id'] = 1; ////Pending
         }
 
         $this->load->model('localisation/order_status');
