@@ -3,7 +3,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     private $testMode;
     public $data = array();
 
-    const MODULE_VERSION = 'paysonEmbedded_1.1.0.2';
+    const MODULE_VERSION = 'paysonEmbedded_1.1.0.3';
 
     function __construct($registry) {
         parent::__construct($registry);
@@ -775,7 +775,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
                 {
                     // Do nothing
                 }
-                $additionalInfo = '&#10;Notification is sent on  :&#9;&#10;&#10; Status: '. $checkout['status']. '&#10;&#10; Order: ' . $data[0]. '&#10;&#10; checkout: ' . $checkout['id'] . '&#10;&#10; Payson-ref: '. $checkout['purchaseId'];
+                $additionalInfo = '&#10;Notification is sent on and the order has been: &#9;'. $checkout['status']. '&#10;&#10; Order: ' . $data[0]. '&#10;&#10; checkout: ' . $checkout['id'] . '&#10;&#10; Payson-ref: '. $checkout['purchaseId'];
                 $this->writeTextToLog($additionalInfo);
             } 
             catch (Exception $e) 
