@@ -1,6 +1,6 @@
 <?php
 
-$_['text_title']  = 'Faktura, kort, bankbetalning';
+$_['text_title']  = 'Faktura, Kort, Bankbetalning';
 $_['text_denied']  = 'Betalningen blev nekad.';
 $_['text_payson_payment_method']  = ' Testa med en annan betalningsmetod.';
 $_['text_payson_payment_error'] = 'Ett fel har uppstått. Vänligen försök igen eller pröva med en annan betalmetod';

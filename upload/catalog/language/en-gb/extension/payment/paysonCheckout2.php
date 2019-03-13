@@ -1,6 +1,6 @@
 <?php
 
-$_['text_title']  = 'Invoice, card, bank';
+$_['text_title']  = 'Invoice, Card, Bank';
 $_['text_denied'] = 'The payment was denied.';
 $_['text_payson_payment_method'] = ' Please try using a different payment method.';
 $_['text_payson_payment_error'] = 'An error has occured. Please try again or choose another payment method.';
