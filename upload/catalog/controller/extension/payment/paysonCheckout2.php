@@ -3,7 +3,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     private $testMode;
     public $data = array();
 
-    const MODULE_VERSION = 'paysonEmbedded_1.1.0.4';
+    const MODULE_VERSION = 'paysonEmbedded_1.1.0.5';
 
     function __construct($registry) {
         parent::__construct($registry);
@@ -570,7 +570,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
                         type                          = 'type',
                         shippingAddress_name          = '" . $checkout['customer']['firstName'] . "', 
                         shippingAddress_lastname      = '" . $checkout['customer']['lastName'] . "', 
-                        shippingAddress_street_ddress = '" . $checkout['customer']['street'] . "',
+                        shippingAddress_street_ddress = '" . str_replace( array( '\'', '"', ',' , ';', '<', '>', '&' ), ' ', $checkout['customer']['street']) . "',
                         shippingAddress_postal_code   = '" . $checkout['customer']['postalCode'] . "',
                         shippingAddress_city          = '" . $checkout['customer']['city'] . "', 
                         shippingAddress_country       = '" . $checkout['customer']['countryCode'] . "'
