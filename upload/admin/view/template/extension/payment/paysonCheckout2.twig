@@ -33,10 +33,21 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab-api">
+                                    
                             <div class="form-group">
                                 <label class="col-sm-2 control-label" for="input-modul-version">{{ text_modul_name}} V- {{ payment_paysonCheckout2_modul_version }}</label>
                                 <div class="col-sm-10" hidden>
                                     <input type="text" name="payment_paysonCheckout2_modul_version" hidden value="{{ text_modul_version }}" placeholder="{{ text_modul_version }}" id="input-modul-version" class="form-control" />
+                                </div>
+                            </div>
+                                
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-method-mode"><span data-toggle="tooltip" title="{{ help_method_mode }}">{{ entry_method_mode }}</span></label>
+                                <div class="col-sm-10">
+                                    <select name="payment_paysonCheckout2_mode" id="input-method-mode" class="form-control">
+                                        <option value="1" {{(payment_paysonCheckout2_mode== 1 ? 'selected="selected"' : '""')}}> {{text_method_mode_live}}</option>
+                                        <option value="0" {{(payment_paysonCheckout2_mode == 0 ? 'selected="selected"' : '""')}}>{{text_method_mode_sandbox}}</option>
+                                    </select>
                                 </div>
                             </div>
                                 
@@ -59,26 +70,7 @@
                                     {% endif %}
                                 </div>
                             </div>
-                                
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label" for="input-method-mode"><span data-toggle="tooltip" title="{{ help_method_mode }}">{{ entry_method_mode }}</span></label>
-                                <div class="col-sm-10">
-                                    <select name="payment_paysonCheckout2_mode" id="input-method-mode" class="form-control">
-                                        <option value="1" {{(payment_paysonCheckout2_mode== 1 ? 'selected="selected"' : '""')}}> {{text_method_mode_live}}</option>
-                                        <option value="0" {{(payment_paysonCheckout2_mode == 0 ? 'selected="selected"' : '""')}}>{{text_method_mode_sandbox}}</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tab-pane" id="tab-general">
-                            <div class="form-group">
-                                <label class="col-sm-2 control-label" for="input-sort-order">{{ entry_sort_order }}</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="payment_paysonCheckout2_sort_order" value="{{ payment_paysonCheckout2_sort_order }}" placeholder="{{ entry_sort_order }}" id="input-sort-order" class="form-control" />
-                                </div>
-                            </div>
-                        
+                                    
                             <div class="form-group">
                                 <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
                                 <div class="col-sm-10">
@@ -91,6 +83,15 @@
                                         <option value="0" selected="selected">{{ text_disabled }}</option>
                                         {% endif %}
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="tab-general">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-sort-order">{{ entry_sort_order }}</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="payment_paysonCheckout2_sort_order" value="{{ payment_paysonCheckout2_sort_order }}" placeholder="{{ entry_sort_order }}" id="input-sort-order" class="form-control" />
                                 </div>
                             </div>
                                     
