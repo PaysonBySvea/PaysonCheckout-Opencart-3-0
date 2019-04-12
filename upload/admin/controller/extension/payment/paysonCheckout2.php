@@ -183,13 +183,18 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
 
         if (isset($this->request->post['payment_paysonCheckout2_merchant_id'])) {
             $data['payment_paysonCheckout2_merchant_id'] = $this->request->post['payment_paysonCheckout2_merchant_id'];
-        } else {
+        } elseif ($this->config->get('payment_paysonCheckout2_merchant_id') != null) {
             $data['payment_paysonCheckout2_merchant_id'] = $this->config->get('payment_paysonCheckout2_merchant_id');
+        }else{
+            $data['payment_paysonCheckout2_merchant_id'] = '4';
         }
+        
         if (isset($this->request->post['payment_paysonCheckout2_api_key'])) {
             $data['payment_paysonCheckout2_api_key'] = $this->request->post['payment_paysonCheckout2_api_key'];
-        } else {
+        } elseif($this->config->get('payment_paysonCheckout2_api_key') != null) {
             $data['payment_paysonCheckout2_api_key'] = $this->config->get('payment_paysonCheckout2_api_key');
+        } else{
+            $data['payment_paysonCheckout2_api_key'] = '2acab30d-fe50-426f-90d7-8c60a7eb31d4';
         }
 
         if (isset($this->request->post['payment_paysonCheckout2_mode'])) {
