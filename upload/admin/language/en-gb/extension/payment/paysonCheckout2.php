@@ -83,7 +83,9 @@ $_['entry_show_comments_no'] = 'no';
 // Error
 $_['error_permission'] = 'Warning: You do not have permission to modify payment Payson module!';
 $_['error_merchant_id'] = 'Agent ID Required!';
+$_['error_merchant_id_format'] = 'You try to send the wrong format of the string or send a blank agent ID';
 $_['error_api_key'] = 'API-key Required!';
+$_['error_api_key_format'] = 'You try to send the wrong format of the string or send a blank API-key';
 $_['error_ignored_order_totals'] = 'Enter a comma separated list with order totals not to send to payson';
 
 //help

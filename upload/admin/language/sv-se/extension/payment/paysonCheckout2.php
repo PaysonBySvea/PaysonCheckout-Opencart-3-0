@@ -83,7 +83,9 @@ $_['entry_show_comments_no'] = 'nej';
 // Error
 $_['error_permission'] = 'Warning: You do not have permission to modify payment Payson module!';
 $_['error_merchant_id'] = 'Merchant ID saknas!';
+$_['error_merchant_id_format'] = 'Du försöker skicka fel format av strängen eller skicka ett tom agent ID';
 $_['error_api_key'] = 'API-nyckel saknas!';
+$_['error_api_key_format'] = 'Du försöker skicka fel format av strängen eller skicka ett tom API-nyckel';
 $_['error_ignored_order_totals'] = 'Ange en kommaseparerad lista med ordertillägg som ej skall skickas till Payson';
 
 //help
