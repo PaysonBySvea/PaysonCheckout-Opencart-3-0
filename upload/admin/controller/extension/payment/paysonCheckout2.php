@@ -365,6 +365,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     }
 
     private function validate() {
+        $this->validateAccountInformation();
 
         if (!$this->user->hasPermission('modify', 'extension/payment/paysonCheckout2')) {
             $this->error['warning'] = $this->language->get('error_permission');
@@ -400,4 +401,43 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
             $this->load->model('setting/event');
             $this->model_setting_event->deleteEventByCode('payson_status_shipped');
     }
+
+    private function validateAccountInformation() {
+        // Include library
+        require_once(DIR_SYSTEM . '../system/library/paysonpayments/include.php');
+        $this->load->model('setting/store');
+    $this->load->model('setting/setting');
+        
+        $merchants = explode('##', $this->request->post['payment_paysonCheckout2_merchant_id']);
+        $keys = explode('##', $this->request->post['payment_paysonCheckout2_api_key']);
+        
+        try {
+            $apiUrl = \Payson\Payments\Transport\Connector::PROD_BASE_URL;
+            if ($this->request->post['payment_paysonCheckout2_mode'] < 1) {
+                $apiUrl = \Payson\Payments\Transport\Connector::TEST_BASE_URL;
+            }
+            
+            $i = 0;    
+            foreach ($merchants as $merchant) {
+                if(!isset($merchant) || $merchant == null){
+                    // Print error messagee
+                    $this->error['merchant_id'] = $this->language->get('error_merchant_id') . ' ' . $this->language->get('error_merchant_id_format');
+                    break;
+                }
+                if(!isset($keys[$i]) || $keys[$i] == null){
+                    // Print error message
+                    $this->error['api_key'] = $this->language->get('error_api_key') . ' ' . $this->language->get('error_api_key_format');
+                    break;
+                }
+                $connector = \Payson\Payments\Transport\Connector::init($merchant, $keys[$i], $apiUrl);
+                $checkoutClient = new \Payson\Payments\CheckoutClient($connector); 
+                // Make the call
+                $accountInformation = $checkoutClient->getAccountInfo();
+                $i += 1;   
+            }        
+        } catch(Exception $e) {
+            // Print error message
+            $this->error['warning'] = $e->getMessage();
+        }     
+    } 
 }
