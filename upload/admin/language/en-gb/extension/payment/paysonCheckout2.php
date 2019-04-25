@@ -7,7 +7,7 @@ $_['heading_title'] = 'Payson Checkout 2.0';
 
 // Text
 $_['text_modul_name'] = 'Payson Checkout 2.0';
-$_['text_modul_version'] = '1.1.0.7';
+$_['text_modul_version'] = '1.1.0.8';
 
 $_['text_payment'] = 'Payment';
 $_['text_extension']     = 'Extensions';
@@ -16,6 +16,8 @@ $_['text_paysonCheckout2'] = '<a onclick="window.open(\'https://www.payson.se/tj
 $_['text_edit'] = 'Edit Payson Direct';
 
 // Entry
+$_['entry_button_create_a_paysonaccount'] = 'Create a PaysonAccount';
+$_['entry_button_create_a_test_paysonaccount'] = 'Create a test PaysonAccount';
 $_['entry_method_mode'] = 'Mode';
 $_['text_method_mode_live'] = 'Production';
 $_['text_method_mode_sandbox'] = 'Test';
@@ -89,6 +91,8 @@ $_['error_api_key_format'] = 'You try to send the wrong format of the string or 
 $_['error_ignored_order_totals'] = 'Enter a comma separated list with order totals not to send to payson';
 
 //help
+$_['help_button_create_a_test_paysonaccount'] = 'You can create a test PaysonAcount';
+$_['help_button_create_a_paysonaccount'] = 'You can create a PaysonAcount here';
 $_['help_method_mode'] = 'Select environment (Production or Test)';
 $_['help_merchant_id'] = 'Enter your merchant ID for Payson';
 $_['help_api_key'] = 'Enter your API-key for Payson';

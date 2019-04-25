@@ -7,7 +7,7 @@ $_['paysonCheckout2_example'] = 'Example Extra Text';
 $_['heading_title'] = 'Payson Checkout 2.0';
 // Text
 $_['text_modul_name'] = 'Payson Checkout 2.0';
-$_['text_modul_version'] = '1.1.0.7';
+$_['text_modul_version'] = '1.1.0.8';
 $_['text_payment'] = 'Payment';
 $_['text_extension']     = 'Extensions';
 $_['text_success'] = 'Success: Du har &auml;ndrat Payson Checkout 2.0 modulen!';
@@ -15,6 +15,8 @@ $_['text_paysonCheckout2'] = '<a onclick="window.open(\'https://www.payson.se/tj
 $_['text_edit'] = 'Uppdatera Payson Invoice';
 
 // Entry
+$_['entry_button_create_a_paysonaccount'] = 'Öppna ett PaysonKonto';
+$_['entry_button_create_a_test_paysonaccount'] = 'Öppna ett test Paysonkonto';
 $_['entry_method_mode'] = 'Mode';
 $_['text_method_mode_live'] = 'Produktionsmilj&ouml;';
 $_['text_method_mode_sandbox'] = 'Testmilj&ouml;';
@@ -89,6 +91,8 @@ $_['error_api_key_format'] = 'Du försöker skicka fel format av strängen eller
 $_['error_ignored_order_totals'] = 'Ange en kommaseparerad lista med ordertillägg som ej skall skickas till Payson';
 
 //help
+$_['help_button_create_a_paysonaccount'] = 'Här kan du öppna ett PaysonKonto';
+$_['help_button_create_a_test_paysonaccount'] = 'Här kan du öppna ett test PaysonKonto';
 $_['help_method_mode'] = 'V&auml;lj l&auml;get (Produktionsmilj&ouml; eller testmilj&ouml;)';
 $_['help_merchant_id'] = 'Ange ditt merchantID f&ouml;r ditt Paysonkonto';
 $_['help_api_key'] = 'Ange din API-nyckel f&ouml;r ditt Paysonkonto';
