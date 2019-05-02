@@ -3,7 +3,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     private $testMode;
     public $data = array();
 
-    const MODULE_VERSION = 'paysonEmbedded_1.1.0.8';
+    const MODULE_VERSION = 'paysonEmbedded_1.1.0.9';
 
     function __construct($registry) {
         parent::__construct($registry);
@@ -87,6 +87,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     }
 
     private function getPaysonCheckout() {
+        require_once(DIR_SYSTEM . '../system/library/paysonpayments/include.php');
         $this->load->language('extension/payment/paysonCheckout2');
 
         $paysonApi = $this->getAPIInstanceMultiShop();
@@ -146,6 +147,11 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         try {
             if ($this->getCheckoutIdPayson($this->session->data['order_id']) != Null) {
                 $checkout = $checkoutClient->get(array('id' => $this->getCheckoutIdPayson($this->session->data['order_id'])));
+            }
+
+            if ($this->getCheckoutIdPayson($this->session->data['order_id']) != Null AND $checkout['status'] == 'created') {
+                $checkout = $checkoutClient->create($checkoutData);
+                
             } else {
                 $checkout = $checkoutClient->create($checkoutData);
             }
