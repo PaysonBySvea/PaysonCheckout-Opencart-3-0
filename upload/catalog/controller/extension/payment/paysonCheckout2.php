@@ -3,7 +3,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     private $testMode;
     public $data = array();
 
-    const MODULE_VERSION = 'paysonEmbedded_1.1.0.9';
+    const MODULE_VERSION = 'paysonEmbedded_1.1.1.0';
 
     function __construct($registry) {
         parent::__construct($registry);
@@ -383,16 +383,23 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
 
         $order_data = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 
-        $query = "SELECT `order_product_id`, `name`, `model`, `price`, `quantity`, `tax` / `price` as 'tax_rate' FROM `" . DB_PREFIX . "order_product` WHERE `order_id` = " . (int) $orderId . " UNION ALL SELECT 0, '" . $this->language->get('text_gift_card') . "', `code`, `amount`, '1', 0.00 FROM `" . DB_PREFIX . "order_voucher` WHERE `order_id` = " . (int) $orderId;
+         $query = "SELECT `product_id`, `name`, `model`, `price`, `quantity`, `tax` / `price` as 'tax_rate' FROM `" . DB_PREFIX . "order_product` WHERE `order_id` = " . (int) $orderId . " UNION ALL SELECT 0, '" . $this->language->get('text_gift_card') . "', `code`, `amount`, '1', 0.00 FROM `" . DB_PREFIX . "order_voucher` WHERE `order_id` = " . (int) $orderId;
         $product_query = $this->db->query($query)->rows;
 
-        foreach ($product_query as $product) {
-
-            $productOptions = $this->db->query("SELECT name, value FROM " . DB_PREFIX . 'order_option WHERE order_id = ' . (int) $orderId . ' AND order_product_id=' . (int) $product['order_product_id'])->rows;
+        foreach ($this->cart->getProducts() as $product) {
+            //$productOptions = $this->db->query("SELECT name, value FROM " . DB_PREFIX . 'order_option WHERE order_id = ' . (int) $orderId . ' AND order_product_id=' . (int) $product['order_product_id'])->rows;
             $optionsArray = array();
-            if ($productOptions) {
-                foreach ($productOptions as $option) {
+            //$option_data = array();
+            //if ($productOptions) {
+                foreach ($product['option'] as $option) {
                     $optionsArray[] = $option['name'] . ': ' . $option['value'];
+                }
+            //}
+
+            $tax_rate_product = '';
+            foreach ($product_query as $product1) {
+                if($product['product_id'] == $product1['product_id']){
+                    $tax_rate_product = $product1['tax_rate'];
                 }
             }
 
@@ -402,14 +409,14 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
                 $productTitle .= ' | ' . join('; ', $optionsArray);
 
             $productTitle = (strlen($productTitle) > 80 ? substr($productTitle, 0, strpos($productTitle, ' ', 80)) : $productTitle);
-            $product_price = $this->currency->format(($product['price'] + ($product['price'] * $product['tax_rate'])), $order_data['currency_code'], $order_data['currency_value'], false);
-
+            $product_price = $this->currency->format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency'],  '', false);
             //$payData->AddOrderItem(new PaysonEmbedded\OrderItem(html_entity_decode($productTitle, ENT_QUOTES, 'UTF-8'), $product_price, $product['quantity'], $product['tax_rate'], $product['model']));
+
             $orderitemslist[] = array(
                 'name' => html_entity_decode($productTitle, ENT_QUOTES, 'UTF-8'),
                 'unitPrice' => $product_price,
                 'quantity' => $product['quantity'],
-                'taxrate' => $product['tax_rate'],
+                'taxrate' => $tax_rate_product,
                 'reference' => $product['model']
             );
         }
@@ -426,7 +433,8 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
                 $orderTotalAmountTemp = $orderTotal['value'] * (1 + ($orderTotal['lpa_tax'] > 0 ? $orderTotal['lpa_tax'] / 100 : 0));
             }
             
-            $orderTotalAmount = $this->currency->format($orderTotalAmountTemp, $order_data['currency_code'], $order_data['currency_value'], false) ;
+            //$orderTotalAmount = $this->currency->format($orderTotalAmountTemp, $order_data['currency_code'], $order_data['currency_value'], false) ;
+            $orderTotalAmount = $this->currency->format($orderTotalAmountTemp, $this->session->data['currency'], '', false);
 			
             if ($orderTotalAmount == null || $orderTotalAmount == 0) {
                 continue;
