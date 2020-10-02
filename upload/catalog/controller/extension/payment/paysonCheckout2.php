@@ -3,7 +3,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     private $testMode;
     public $data = array();
 
-    const MODULE_VERSION = 'paysonEmbedded_1.1.1.0';
+    const MODULE_VERSION = 'paysonEmbedded_1.1.1.1';
 
     function __construct($registry) {
         parent::__construct($registry);
@@ -60,7 +60,8 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         $this->data['language_code'] = $order_data['language_code'];
         $this->data['salt'] = md5($this->config->get('payment_paysonCheckout2_secure_word')) . '1-' . $this->data['order_id'];
         // Customer info
-        $this->data['sender_email'] = (int)$order_data['customer_id'] > 0 ? $order_data['email'] : '';
+        $this->data['sender_email'] = isset($order_data['customer_id']) ? $order_data['email'] : '';
+        //$this->data['sender_email'] = (int)$order_data['customer_id'] > 0 ? $order_data['email'] : '';
         $this->data['sender_first_name'] = $this->customer->isLogged()? html_entity_decode($order_data['payment_firstname'], ENT_QUOTES, 'UTF-8') : $this->session->data['payment_address']['firstname'];
         $this->data['sender_last_name'] = $this->customer->isLogged()? html_entity_decode($order_data['payment_lastname'], ENT_QUOTES, 'UTF-8') : $this->session->data['payment_address']['lastname'];
         $this->data['sender_telephone'] = html_entity_decode($order_data['telephone'], ENT_QUOTES, 'UTF-8');
