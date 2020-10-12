@@ -3,7 +3,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     private $testMode;
     public $data = array();
 
-    const MODULE_VERSION = 'paysonEmbedded_1.1.1.1';
+    const MODULE_VERSION = 'paysonEmbedded_1.1.1.2';
 
     function __construct($registry) {
         parent::__construct($registry);
@@ -420,6 +420,20 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
                 'taxrate' => $tax_rate_product,
                 'reference' => $product['model']
             );
+        }
+
+        //Vouchers as a product (Checkout)
+        if (!empty($this->session->data['vouchers'])) {
+            foreach ($this->session->data['vouchers'] as $key => $voucher) {
+                $voucherDescription = (strlen($voucher['description']) > 80 ? substr($voucher['description'], 0, strpos($voucher['description'], ' ', 80)) : $voucher['description']);
+                $orderitemslist[] = array(
+                    'name' => 'Voucher',
+                    'unitPrice' => $this->currency->format($voucher['amount'], $this->session->data['currency'],  '', false),
+                    'quantity' => 1,
+                    'taxrate' => 0.0,
+                    'reference' => html_entity_decode($voucherDescription, ENT_QUOTES, 'UTF-8')
+                );
+            }
         }
 
         $orderTotals = $this->getOrderTotals();
