@@ -2,8 +2,8 @@
 class ModelExtensionPaymentPaysonCheckout2 extends Model {
 
     private $currency_supported_by_p_direct = array('SEK', 'EUR');
-    private $minimumAmountSEK = 6;
-    private $minimumAmountEUR = 0.6;
+    private $minimumAmountSEK = 10;
+    private $minimumAmountEUR = 1;
     private $maxAmountSEK = 40000;
     private $maxAmountEUR = 3000;
 
