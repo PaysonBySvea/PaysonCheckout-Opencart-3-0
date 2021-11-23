@@ -3,7 +3,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     private $testMode;
     public $data = array();
 
-    const MODULE_VERSION = 'paysonEmbedded_1.1.1.4';
+    const MODULE_VERSION = 'paysonEmbedded_1.1.1.5';
 
     function __construct($registry) {
         parent::__construct($registry);
@@ -406,11 +406,21 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
 
             $productTitle = $product['name'];
 
+            /*
+            $product_price_temp = 0;
+            if(!$this->config->get('config_tax')){
+                    $product_price_temp = $product['price'] + ($product['price'] * $tax_rate_product);
+            }else {
+                    $product_price_temp = $product['price'];
+            }
+            */
+
             if (!empty($optionsArray))
                 $productTitle .= ' | ' . join('; ', $optionsArray);
 
             $productTitle = (strlen($productTitle) > 80 ? substr($productTitle, 0, strpos($productTitle, ' ', 80)) : $productTitle);
-            $product_price = $this->currency->format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency'],  '', false);
+            $product_price = $this->currency->format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('total_tax_status')), $this->session->data['currency'],  '', false);
+            //$product_price = $this->currency->format($this->tax->calculate($product_price_temp, $product['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency'],  '', false);
             //$payData->AddOrderItem(new PaysonEmbedded\OrderItem(html_entity_decode($productTitle, ENT_QUOTES, 'UTF-8'), $product_price, $product['quantity'], $product['tax_rate'], $product['model']));
 
             $orderitemslist[] = array(
@@ -442,7 +452,11 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
             $orderTotalType = 'SERVICE';
 
             $orderTotalAmountTemp = 0;
-            if((int)$orderTotal['sort_order'] >= (int)$this->config->get('total_tax_sort_order')){
+            
+            if(!(int)$this->config->get('total_tax_status')){
+              $orderTotalAmountTemp = $orderTotal['value'];  
+            }
+            elseif((int)$orderTotal['sort_order'] >= (int)$this->config->get('total_tax_sort_order')){
               $orderTotalAmountTemp = $orderTotal['value'];  
             }else{
                 $orderTotalAmountTemp = $orderTotal['value'] * (1 + ($orderTotal['lpa_tax'] > 0 ? $orderTotal['lpa_tax'] / 100 : 0));
