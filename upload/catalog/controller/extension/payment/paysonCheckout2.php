@@ -3,7 +3,7 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
     private $testMode;
     public $data = array();
 
-    const MODULE_VERSION = 'paysonEmbedded_1.1.1.6';
+    const MODULE_VERSION = 'paysonEmbedded_1.1.1.7';
 
     function __construct($registry) {
         parent::__construct($registry);
@@ -52,7 +52,8 @@ class ControllerExtensionPaymentPaysonCheckout2 extends Controller {
         $this->data['ok_url'] = $this->url->link('extension/payment/paysonCheckout2/returnFromPayson&order_id=' . $this->session->data['order_id']);
         $this->data['ipn_url'] = $this->url->link('extension/payment/paysonCheckout2/paysonIpn&order_id=' . $this->session->data['order_id']);
         $this->data['checkout_url'] = $this->url->link('extension/payment/paysonCheckout2/returnFromPayson&order_id=' . $this->session->data['order_id']);
-        $this->data['terms_url'] = $this->url->link('information/information/agree', 'information_id=5');
+        //$this->data['terms_url'] = $this->url->link('information/information/agree', 'information_id=5');
+        $this->data['terms_url'] = $this->url->link('information/information/information_id=5');
         // Order
         $this->data['order_id'] = $order_data['order_id'];
         $this->data['amount'] = $this->currency->format($order_data['total'] * 100, $order_data['currency_code'], $order_data['currency_value'], false) / 100;
