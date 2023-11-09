@@ -9,7 +9,7 @@ class ModelExtensionPaymentPaysonCheckout2 extends Model {
 
 
     public function getMethod($address, $total) {
-        //print_r('kdkdk');exit;
+ 
         $this->load->language('extension/payment/paysonCheckout2');
 
         $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "zone_to_geo_zone WHERE geo_zone_id = '" . (int) $this->config->get('payment_paysonCheckout2_geo_zone_id') . "' AND country_id = '" . (int) $address['country_id'] . "' AND (zone_id = '" . (int) $address['zone_id'] . "' OR zone_id = '0')");
@@ -34,7 +34,6 @@ class ModelExtensionPaymentPaysonCheckout2 extends Model {
         }
 
         $paysonLogotype = '';
-        error_log($this->config->get('paysonCheckout2_logotype'));
         if($this->config->get('payment_paysonCheckout2_logotype') == 3){
             $paysonLogotype =  $this->language->get('text_title') .' <img src="catalog/view/image/payment/paysonCheckout2_P.png">';
         }else if($this->config->get('payment_paysonCheckout2_logotype') == 2){
@@ -53,7 +52,7 @@ class ModelExtensionPaymentPaysonCheckout2 extends Model {
                 'sort_order' => $this->config->get('payment_paysonCheckout2_sort_order')
             );
         }
-//ModelExtensionPaymentPaysonCheckout2
+
         return $method_data;
     }
 
